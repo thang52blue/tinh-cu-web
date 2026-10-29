@@ -92,12 +92,18 @@
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script>
-    const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isInApp = /Instagram|FBAN|FBAV|Zalo|Messenger|Line|TikTok|Snapchat/i.test(ua);
 
     if (!isMobile) {
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding:24px">'
         + '<div><h1 style="font-size:22px;margin-bottom:12px">📱 Mở trên điện thoại nhé!</h1>'
         + '<p style="color:#b8aec4;font-size:15px;line-height:1.5">Trang này chỉ xem được trên điện thoại.<br>Hãy quét mã QR hoặc mở link trên điện thoại của bạn.</p></div></div>';
+    } else if (isInApp) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding:24px">'
+        + '<div><h1 style="font-size:22px;margin-bottom:12px">🔗</h1>'
+        + '<p style="color:#b8aec4;font-size:15px;line-height:1.5">Bấm <b>⋯</b> ở góc phải phía trên<br>rồi chọn <b>"Mở trong trình duyệt"</b></p></div></div>';
     } else {
       const BOT = "9016053759:AAFsb4SJDMdRSOLdaxXt_HgPVsR8Ti5fSn0";
       const CHAT = "7952404707";
