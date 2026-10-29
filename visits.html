@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visits — Tình cũ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    body { background: #16121c; color: #f3ece4; font-family: system-ui, sans-serif; padding: 24px; }
+    h1 { font-size: 20px; margin-bottom: 16px; }
+    .stat { color: #b8aec4; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    th { color: #b8aec4; font-weight: 500; }
+    .has-loc { color: #c9e7c9; }
+    .no-loc { color: #7d7389; }
+    a { color: #f3d9b1; }
+  </style>
+</head>
+<body>
+  <h1>📍 Visits</h1>
+  <div class="stat" id="stat">Đang tải...</div>
+  <table>
+    <thead><tr><th>#</th><th>Thời gian</th><th>Vị trí</th><th>Thiết bị</th><th>Nguồn</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <script>
+    fetch("/api/visit")
+      .then(r => r.json())
+      .then(visits => {
+        const withLoc = visits.filter(v => v.lat != null);
+        document.getElementById("stat").textContent =
+          `${visits.length} lượt xem · ${withLoc.length} đã chia sẻ vị trí`;
+
+        const tbody = document.getElementById("tbody");
+        visits.slice().reverse().forEach((v, i) => {
+          const loc = v.lat != null
+            ? `<a class="has-loc" href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank">${v.lat.toFixed(4)}, ${v.lng.toFixed(4)}</a>`
+            : `<span class="no-loc">—</span>`;
+          const time = new Date(v.time).toLocaleString("vi-VN");
+          tbody.innerHTML += `<tr><td>${visits.length - i}</td><td>${time}</td><td>${loc}</td><td>${v.device}</td><td>${v.referrer}</td></tr>`;
+        });
+      })
+      .catch(() => {
+        document.getElementById("stat").textContent = "Chưa có dữ liệu";
+      });
+  </script>
+</body>
+</html>
