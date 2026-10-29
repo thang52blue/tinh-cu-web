@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>UA Tycoon — Trở thành UA Manager</title>
+  <meta name="theme-color" content="#0f0f1a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f1a; --card: #1a1a2e; --border: rgba(255,255,255,0.06);
+      --text: #e8e4f0; --dim: #6b6580; --accent: #7c5cfc;
+      --green: #34d399; --red: #f87171; --yellow: #fbbf24; --blue: #60a5fa;
+      --pink: #f472b6; --orange: #fb923c;
+    }
+    body {
+      min-height: 100dvh; background: var(--bg); color: var(--text);
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .intro {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100dvh; text-align: center; padding: 24px; animation: fadeIn 0.8s ease;
+    }
+    .intro .logo { font-size: 64px; margin-bottom: 16px; }
+    .intro h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+    .intro h1 span { color: var(--accent); }
+    .intro .tagline { color: var(--dim); font-size: 16px; margin-bottom: 8px; }
+    .intro .desc {
+      color: var(--dim); font-size: 14px; line-height: 1.6; max-width: 340px;
+      margin-bottom: 32px; padding: 16px; border-radius: 12px;
+      background: var(--card); border: 1px solid var(--border); text-align: left;
+    }
+    .intro .desc b { color: var(--text); }
+    .btn-main {
+      border: 0; border-radius: 12px; padding: 16px 40px;
+      font: inherit; font-size: 17px; font-weight: 600; cursor: pointer;
+      color: #fff; background: var(--accent);
+      box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4); transition: transform 0.15s;
+    }
+    .btn-main:active { transform: scale(0.95); }
+
+    .game { display: none; padding: 16px; padding-bottom: 100px; max-width: 480px; margin: 0 auto; }
+
+    .top-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px; text-align: center;
+    }
+    .stat-card .label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+    .metrics { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+    .metric {
+      flex-shrink: 0; background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; text-align: center; min-width: 90px;
+    }
+    .metric .m-label { font-size: 10px; color: var(--dim); text-transform: uppercase; }
+    .metric .m-value { font-size: 16px; font-weight: 600; margin-top: 2px; }
+
+    .day-bar {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .day-bar .day-label { font-size: 13px; color: var(--dim); flex-shrink: 0; }
+    .day-bar .day-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .day-bar .day-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.3s linear; }
+    .day-bar .day-num { font-size: 15px; font-weight: 700; color: var(--yellow); flex-shrink: 0; }
+
+    .section-title {
+      font-size: 14px; font-weight: 600; color: var(--dim); text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 10px; margin-top: 8px;
+    }
+    .daily-spend {
+      font-size: 13px; color: var(--dim); margin-bottom: 10px;
+    }
+    .daily-spend b { color: var(--orange); }
+
+    .channels { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .channel {
+      background: var(--card); border: 2px solid var(--border);
+      border-radius: 14px; padding: 16px; cursor: pointer;
+      display: flex; align-items: center; gap: 14px;
+      transition: transform 0.15s, border-color 0.3s; position: relative; overflow: hidden;
+    }
+    .channel:active { transform: scale(0.97); }
+    .channel.active { border-color: var(--green); }
+    .channel.locked { opacity: 0.4; pointer-events: none; }
+    .channel .ch-icon { font-size: 32px; flex-shrink: 0; }
+    .channel .ch-info { flex: 1; }
+    .channel .ch-name { font-size: 15px; font-weight: 600; }
+    .channel .ch-meta { font-size: 12px; color: var(--dim); margin-top: 3px; }
+    .channel .ch-meta span { margin-right: 10px; }
+    .channel .ch-toggle {
+      width: 44px; height: 26px; border-radius: 13px; flex-shrink: 0;
+      background: rgba(255,255,255,0.1); position: relative; transition: background 0.3s;
+    }
+    .channel .ch-controls {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .channel .ch-btn {
+      width: 30px; height: 30px; border: 0; border-radius: 8px;
+      font: inherit; font-size: 18px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text); background: rgba(255,255,255,0.08);
+      transition: background 0.15s;
+    }
+    .channel .ch-btn:active { background: rgba(255,255,255,0.15); }
+    .channel .ch-count {
+      font-size: 16px; font-weight: 700; min-width: 24px; text-align: center;
+      color: var(--green);
+    }
+    .channel .ch-count.zero { color: var(--dim); }
+    .channel .ch-lock {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(15,15,26,0.8); font-size: 13px; color: var(--dim);
+    }
+
+    .upgrades { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .upgrade {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px; transition: transform 0.15s;
+    }
+    .upgrade:active { transform: scale(0.97); }
+    .upgrade.bought { opacity: 0.35; pointer-events: none; }
+    .upgrade .up-icon { font-size: 24px; }
+    .upgrade .up-info { flex: 1; }
+    .upgrade .up-name { font-size: 14px; font-weight: 600; }
+    .upgrade .up-desc { font-size: 12px; color: var(--dim); margin-top: 2px; }
+    .upgrade .up-cost { font-size: 14px; font-weight: 600; color: var(--yellow); }
+
+    .event-toast {
+      position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 20px; max-width: 360px; width: calc(100% - 32px);
+      z-index: 100; transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .event-toast.show { top: 20px; }
+    .event-toast .ev-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .event-toast .ev-desc { font-size: 13px; color: var(--dim); line-height: 1.5; }
+
+    .float-num {
+      position: fixed; pointer-events: none; z-index: 50;
+      font-size: 16px; font-weight: 700; animation: floatUp 1.5s ease-out forwards;
+    }
+    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
+
+    .goal-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--card); border-top: 1px solid var(--border); padding: 12px 16px; z-index: 10;
+    }
+    .goal-inner { max-width: 480px; margin: 0 auto; }
+    .goal-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--dim); margin-bottom: 6px; }
+    .goal-track { width: 100%; height: 8px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .goal-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--pink)); transition: width 0.5s ease; }
+
+    .win {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100dvh; text-align: center; padding: 24px; gap: 16px;
+    }
+    .win .trophy { font-size: 80px; animation: bounce 1s ease infinite; }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+    .win h1 { font-size: 32px; font-weight: 700; }
+    .win h1 span { color: var(--accent); }
+    .win .stats { color: var(--dim); font-size: 15px; line-height: 2; }
+    .win .stats b { color: var(--text); }
+
+    .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 200; overflow: hidden; }
+    .confetti { position: absolute; top: -20px; animation: confDrop linear forwards; }
+    @keyframes confDrop { to { top: 110vh; transform: rotate(720deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <div class="intro" id="intro">
+    <div class="logo">📱</div>
+    <h1>UA <span>Tycoon</span></h1>
+    <div class="tagline">Trở thành UA Manager huyền thoại</div>
+    <div class="desc">
+      <b>Nhiệm vụ:</b> Đưa app từ 0 → 1,000,000 users<br><br>
+      <b>💰 Ngân sách:</b> $50,000<br>
+      <b>📢 Bật kênh quảng cáo</b> → tự chạy mỗi ngày<br>
+      <b>💵 Users sinh doanh thu</b> → tái đầu tư<br>
+      <b>⚡ Sự kiện random</b> → viral, crash, funding...
+    </div>
+    <button class="btn-main" id="startBtn">Bắt đầu chơi</button>
+  </div>
+
+  <div class="game" id="game">
+    <div class="top-bar">
+      <div class="stat-card"><div class="label">Ngân sách</div><div class="value" id="sBudget" style="color:var(--green)">$50,000</div></div>
+      <div class="stat-card"><div class="label">Users</div><div class="value" id="sUsers" style="color:var(--blue)">0</div></div>
+      <div class="stat-card"><div class="label">Doanh thu</div><div class="value" id="sRevenue" style="color:var(--orange)">$0</div></div>
+    </div>
+
+    <div class="day-bar">
+      <div class="day-label">⏱ Ngày</div>
+      <div class="day-track"><div class="day-fill" id="dayFill" style="width:0%"></div></div>
+      <div class="day-num" id="sDay">1</div>
+    </div>
+
+    <div class="metrics" id="metrics">
+      <div class="metric"><div class="m-label">Avg CPI</div><div class="m-value" id="mCpi">—</div></div>
+      <div class="metric"><div class="m-label">$/ngày</div><div class="m-value" id="mRevDay" style="color:var(--green)">$0</div></div>
+      <div class="metric"><div class="m-label">Chi/ngày</div><div class="m-value" id="mSpendDay" style="color:var(--red)">$0</div></div>
+      <div class="metric"><div class="m-label">ROAS</div><div class="m-value" id="mRoas" style="color:var(--yellow)">—</div></div>
+    </div>
+
+    <div class="section-title">📢 Kênh quảng cáo</div>
+    <div class="daily-spend">Chi phí mỗi ngày: <b id="dailyTotal">$0</b></div>
+    <div class="channels" id="channels"></div>
+
+    <div class="section-title">🔧 Upgrades</div>
+    <div class="upgrades" id="upgrades"></div>
+
+    <button style="margin-top:20px;border:0;background:rgba(255,255,255,0.05);color:var(--dim);font:inherit;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;width:100%" onclick="localStorage.removeItem('ua_tycoon');location.reload()">🔄 Reset Game</button>
+  </div>
+
+  <div class="goal-bar" id="goalBar" style="display:none">
+    <div class="goal-inner">
+      <div class="goal-label"><span>🎯 1,000,000 users</span><span id="goalPct">0%</span></div>
+      <div class="goal-track"><div class="goal-fill" id="goalFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="event-toast" id="eventToast">
+    <div class="ev-title" id="evTitle"></div>
+    <div class="ev-desc" id="evDesc"></div>
+  </div>
+
+  <div class="win" id="win">
+    <div class="trophy">🏆</div>
+    <h1>UA <span>Legend!</span></h1>
+    <div class="stats" id="winStats"></div>
+    <button class="btn-main" onclick="localStorage.removeItem('ua_tycoon');location.reload()">Chơi lại</button>
+  </div>
+
+  <div class="confetti-container" id="confetti"></div>
+
+  <script>
+    let budget = 50000, users = 0, day = 1, totalSpent = 0, totalRevenue = 0;
+    let cpiMultiplier = 1, usersMultiplier = 1, revenuePerUser = 0.5;
+    let viralChance = 0.003, churnRate = 0.002, organicRate = 0;
+    let activeChannels = {};
+    let boughtUpgrades = new Set();
+    let dayProgress = 0;
+    const GOAL = 1000000;
+    const TICK_MS = 1000;
+    const DAY_TICKS = 30;
+
+    const CHANNELS = [
+      { id: "fb", name: "Facebook Ads", icon: "📘", cpi: [0.8, 2.5], users: [80, 200], cost: 300, unlock: 0 },
+      { id: "gg", name: "Google UAC", icon: "🔍", cpi: [1.0, 3.0], users: [60, 180], cost: 400, unlock: 0 },
+      { id: "tt", name: "TikTok Ads", icon: "🎵", cpi: [0.5, 2.0], users: [100, 300], cost: 250, unlock: 0 },
+      { id: "asa", name: "Apple Search Ads", icon: "🍎", cpi: [1.5, 4.0], users: [40, 120], cost: 500, unlock: 5000 },
+      { id: "inf", name: "Influencer", icon: "⭐", cpi: [0.3, 1.5], users: [200, 600], cost: 800, unlock: 20000 },
+      { id: "tv", name: "TV / OOH", icon: "📺", cpi: [0.2, 1.0], users: [500, 2000], cost: 2000, unlock: 100000 },
+    ];
+
+    const UPGRADES = [
+      { id: "creative", name: "Creative Optimization", desc: "CPI giảm 15%", icon: "🎨", cost: 2000, effect: () => { cpiMultiplier *= 0.85; } },
+      { id: "retarget", name: "Retargeting", desc: "Users/campaign +30%", icon: "🎯", cost: 3000, effect: () => { usersMultiplier *= 1.3; } },
+      { id: "wom", name: "Word of Mouth", desc: "Users tự kéo users mới", icon: "🗣", cost: 4000, effect: () => { organicRate += 0.003; } },
+      { id: "retain", name: "Retention Push", desc: "Giảm churn 50%", icon: "🛡", cost: 5000, effect: () => { churnRate *= 0.5; } },
+      { id: "abtest", name: "A/B Testing", desc: "CPI giảm thêm 20%", icon: "🧪", cost: 5000, effect: () => { cpiMultiplier *= 0.8; } },
+      { id: "iap", name: "In-App Purchases", desc: "Revenue/user x2", icon: "💎", cost: 6000, effect: () => { revenuePerUser *= 2; } },
+      { id: "share", name: "Share Feature", desc: "Viral chance x2", icon: "📲", cost: 7000, effect: () => { viralChance *= 2; } },
+      { id: "lookalike", name: "Lookalike Audiences", desc: "Users +50%", icon: "👥", cost: 8000, effect: () => { usersMultiplier *= 1.5; } },
+      { id: "subs", name: "Subscription Model", desc: "Revenue/user x2.5", icon: "📦", cost: 10000, effect: () => { revenuePerUser *= 2.5; } },
+      { id: "mlbid", name: "ML Bidding", desc: "CPI giảm 25%", icon: "🤖", cost: 12000, effect: () => { cpiMultiplier *= 0.75; } },
+      { id: "viral", name: "Viral Loop", desc: "Users x2", icon: "🔄", cost: 15000, effect: () => { usersMultiplier *= 2; } },
+    ];
+
+    const EVENTS = [
+      { title: "📱 iOS Privacy Update!", desc: "IDFA thay đổi! CPI tăng 30% trong 60 giây.", apply: () => { cpiMultiplier *= 1.3; setTimeout(() => { cpiMultiplier /= 1.3; showEvent("📱 iOS Update hết ảnh hưởng", "CPI đã trở lại bình thường."); }, 60000); } },
+      { title: "🔥 App lên Top Chart!", desc: "+5,000 organic users miễn phí!", apply: () => { users += 5000; floatNum("+5,000 organic 🔥", "var(--green)"); } },
+      { title: "💸 Investor Funding!", desc: "Nhà đầu tư rót thêm $15,000!", apply: () => { budget += 15000; floatNum("+$15,000 💰", "var(--yellow)"); } },
+      { title: "📉 Market Crash!", desc: "CPI tăng 20% trong 45 giây.", apply: () => { cpiMultiplier *= 1.2; setTimeout(() => { cpiMultiplier /= 1.2; }, 45000); } },
+      { title: "🎉 Holiday Season!", desc: "CPI giảm 25% trong 60 giây!", apply: () => { cpiMultiplier *= 0.75; setTimeout(() => { cpiMultiplier /= 0.75; }, 60000); } },
+      { title: "📰 PR tốt!", desc: "Báo review app. +3,000 users!", apply: () => { users += 3000; floatNum("+3,000 📰", "var(--green)"); } },
+      { title: "🎯 Competitor thua!", desc: "Đối thủ rút lui. CPI giảm 20% trong 60s!", apply: () => { cpiMultiplier *= 0.8; setTimeout(() => { cpiMultiplier /= 0.8; }, 60000); } },
+      { title: "🐛 Bug App!", desc: "App lỗi! Mất 2,000 users.", apply: () => { users = Math.max(0, users - 2000); floatNum("-2,000 🐛", "var(--red)"); } },
+      { title: "💰 Revenue Boost!", desc: "User engagement tăng! Revenue x1.5 trong 60s.", apply: () => { revenuePerUser *= 1.5; setTimeout(() => { revenuePerUser /= 1.5; }, 60000); } },
+    ];
+
+    // === RENDER ===
+    function renderChannels() {
+      const el = document.getElementById("channels");
+      el.innerHTML = "";
+      let dailyCost = 0;
+      CHANNELS.forEach(ch => {
+        const locked = users < ch.unlock;
+        const count = activeChannels[ch.id] || 0;
+        dailyCost += ch.cost * count;
+        const div = document.createElement("div");
+        div.className = "channel" + (locked ? " locked" : "") + (count > 0 ? " active" : "");
+        const cpiR = `$${(ch.cpi[0] * cpiMultiplier).toFixed(2)}–$${(ch.cpi[1] * cpiMultiplier).toFixed(2)}`;
+        const usersR = `${Math.round(ch.users[0] * usersMultiplier)}–${Math.round(ch.users[1] * usersMultiplier)}/camp/ngày`;
+        div.innerHTML = `
+          <div class="ch-icon">${ch.icon}</div>
+          <div class="ch-info">
+            <div class="ch-name">${ch.name}</div>
+            <div class="ch-meta"><span>CPI: ${cpiR}</span><span>${usersR}</span></div>
+          </div>
+          <div style="font-size:12px;color:var(--dim);flex-shrink:0">$${ch.cost}/camp</div>
+          <div class="ch-controls">
+            <div class="ch-btn" data-action="remove" data-id="${ch.id}">−</div>
+            <div class="ch-count ${count === 0 ? 'zero' : ''}">${count}</div>
+            <div class="ch-btn" data-action="add" data-id="${ch.id}">+</div>
+          </div>
+          ${locked ? `<div class="ch-lock">🔒 ${ch.unlock.toLocaleString()} users để mở</div>` : ""}`;
+        if (!locked) {
+          div.querySelector('[data-action="add"]').addEventListener("click", (e) => { e.stopPropagation(); addCampaign(ch.id); });
+          div.querySelector('[data-action="remove"]').addEventListener("click", (e) => { e.stopPropagation(); removeCampaign(ch.id); });
+        }
+        el.appendChild(div);
+      });
+      document.getElementById("dailyTotal").textContent = "$" + dailyCost.toLocaleString();
+    }
+
+    function addCampaign(id) {
+      activeChannels[id] = (activeChannels[id] || 0) + 1;
+      renderChannels(); updateUI();
+    }
+
+    function removeCampaign(id) {
+      if (!activeChannels[id]) return;
+      activeChannels[id]--;
+      if (activeChannels[id] <= 0) delete activeChannels[id];
+      renderChannels(); updateUI();
+    }
+
+    function renderUpgrades() {
+      const el = document.getElementById("upgrades");
+      el.innerHTML = "";
+      UPGRADES.forEach(up => {
+        const bought = boughtUpgrades.has(up.id);
+        const canBuy = budget >= up.cost && !bought;
+        const div = document.createElement("div");
+        div.className = "upgrade" + (bought ? " bought" : "");
+        if (!bought && !canBuy) div.style.opacity = "0.5";
+        div.innerHTML = `
+          <div class="up-icon">${up.icon}</div>
+          <div class="up-info">
+            <div class="up-name">${up.name} ${bought ? "✓" : ""}</div>
+            <div class="up-desc">${up.desc}</div>
+          </div>
+          <div class="up-cost">${bought ? "Đã mua" : "$" + up.cost.toLocaleString()}</div>`;
+        if (canBuy) div.addEventListener("click", () => buyUpgrade(up));
+        el.appendChild(div);
+      });
+    }
+
+    function buyUpgrade(up) {
+      budget -= up.cost;
+      boughtUpgrades.add(up.id);
+      up.effect();
+      floatNum(up.name + " ✓", "var(--accent)");
+      renderChannels(); renderUpgrades(); updateUI();
+    }
+
+    function getDailySpend() {
+      let s = 0;
+      CHANNELS.forEach(ch => { s += ch.cost * (activeChannels[ch.id] || 0); });
+      return s;
+    }
+
+    function getDailyRevenue() { return users * revenuePerUser; }
+
+    function updateUI() {
+      document.getElementById("sBudget").textContent = "$" + Math.round(budget).toLocaleString();
+      document.getElementById("sUsers").textContent = users.toLocaleString();
+      document.getElementById("sRevenue").textContent = "$" + Math.round(totalRevenue).toLocaleString();
+      document.getElementById("sDay").textContent = day;
+      document.getElementById("mCpi").textContent = totalSpent > 0 && users > 0 ? "$" + (totalSpent / users).toFixed(2) : "—";
+      document.getElementById("mRevDay").textContent = "$" + Math.round(getDailyRevenue()).toLocaleString();
+      document.getElementById("mSpendDay").textContent = "$" + getDailySpend().toLocaleString();
+      const roas = totalSpent > 0 ? (totalRevenue / totalSpent * 100) : 0;
+      document.getElementById("mRoas").textContent = roas > 0 ? roas.toFixed(0) + "%" : "—";
+      document.getElementById("dayFill").style.width = ((dayProgress / DAY_TICKS) * 100) + "%";
+
+      const pct = Math.min(100, (users / GOAL) * 100);
+      document.getElementById("goalFill").style.width = pct + "%";
+      document.getElementById("goalPct").textContent = pct.toFixed(1) + "%";
+
+      if (users >= GOAL) winGame();
+      saveGame();
+    }
+
+    // === GAME TICK (every 1s) ===
+    let tickTimer = null;
+    function startTick() {
+      if (tickTimer) return;
+      tickTimer = setInterval(() => {
+        dayProgress++;
+
+        // Revenue per tick
+        const revTick = getDailyRevenue() / DAY_TICKS;
+        if (revTick > 0) { budget += revTick; totalRevenue += revTick; }
+
+        // Organic growth
+        if (users > 1000 && organicRate > 0) {
+          const organic = Math.floor(users * organicRate / DAY_TICKS);
+          if (organic > 0) users += organic;
+        }
+
+        // Random viral
+        if (users > 100 && Math.random() < viralChance) {
+          const r = Math.random();
+          if (r < 0.5) {
+            const b = Math.round(users * 0.02) + 50;
+            users += b; floatNum("🔥 Viral! +" + b.toLocaleString(), "var(--pink)");
+          } else if (r < 0.8) {
+            const b = Math.round(users * 0.05) + 200;
+            users += b; floatNum("🎵 TikTok trend! +" + b.toLocaleString(), "var(--blue)");
+            showEvent("🎵 TikTok Trend!", "App viral trên TikTok! +" + b.toLocaleString() + " users!");
+          } else {
+            const b = Math.round(users * 0.15) + 500;
+            users += b; floatNum("🚀 MEGA VIRAL! +" + b.toLocaleString(), "var(--yellow)");
+            showEvent("🚀 MEGA VIRAL!", "App bùng nổ! +" + b.toLocaleString() + " users!");
+            spawnConfetti();
+          }
+        }
+
+        // Small churn
+        if (users > 500 && Math.random() < 0.05) {
+          const lost = Math.round(users * churnRate);
+          users = Math.max(0, users - lost);
+        }
+
+        // === END OF DAY ===
+        if (dayProgress >= DAY_TICKS) {
+          dayProgress = 0;
+          day++;
+
+          // Run active campaigns
+          CHANNELS.forEach(ch => {
+            const count = activeChannels[ch.id] || 0;
+            if (count === 0) return;
+            let totalGained = 0;
+            let ran = 0;
+            for (let i = 0; i < count; i++) {
+              if (budget < ch.cost) {
+                activeChannels[ch.id] = ran;
+                if (ran === 0) delete activeChannels[ch.id];
+                showEvent("💸 " + ch.name + " giảm!", "Hết budget, còn " + ran + " campaigns.");
+                break;
+              }
+              budget -= ch.cost;
+              totalSpent += ch.cost;
+              const gained = Math.round((ch.users[0] + Math.random() * (ch.users[1] - ch.users[0])) * usersMultiplier);
+              totalGained += gained;
+              ran++;
+            }
+            if (totalGained > 0) {
+              users += totalGained;
+              floatNum("+" + totalGained.toLocaleString() + " từ " + ch.icon + " x" + ran, "var(--green)");
+            }
+          });
+
+          // Random event ~25% per day
+          if (Math.random() < 0.25 && day > 2) {
+            const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+            showEvent(ev.title, ev.desc);
+            ev.apply();
+          }
+
+          renderChannels();
+          renderUpgrades();
+        }
+
+        updateUI();
+      }, TICK_MS);
+    }
+
+    // === HELPERS ===
+    function showEvent(title, desc) {
+      document.getElementById("evTitle").textContent = title;
+      document.getElementById("evDesc").textContent = desc;
+      const t = document.getElementById("eventToast");
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+
+    function floatNum(text, color) {
+      const el = document.createElement("div");
+      el.className = "float-num";
+      el.textContent = text;
+      el.style.color = color;
+      el.style.left = (20 + Math.random() * (window.innerWidth - 200)) + "px";
+      el.style.top = (80 + Math.random() * 100) + "px";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1500);
+    }
+
+    function spawnConfetti() {
+      const c = document.getElementById("confetti");
+      const colors = ["#7c5cfc", "#f472b6", "#34d399", "#fbbf24", "#60a5fa", "#fb923c"];
+      for (let i = 0; i < 80; i++) {
+        const p = document.createElement("div");
+        p.className = "confetti";
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        const w = Math.random() * 10 + 5;
+        p.style.width = w + "px";
+        p.style.height = (Math.random() > 0.5 ? w : w * 2.5) + "px";
+        p.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+        p.style.animationDuration = (Math.random() * 2 + 2) + "s";
+        p.style.animationDelay = (Math.random() * 2) + "s";
+        c.appendChild(p);
+      }
+      setTimeout(() => c.innerHTML = "", 5000);
+    }
+
+    function winGame() {
+      clearInterval(tickTimer);
+      document.getElementById("game").style.display = "none";
+      document.getElementById("goalBar").style.display = "none";
+      localStorage.removeItem("ua_tycoon");
+      const w = document.getElementById("win");
+      w.style.display = "flex";
+      document.getElementById("winStats").innerHTML =
+        `<b>${users.toLocaleString()}</b> users<br>
+        <b>${day}</b> ngày<br>
+        <b>$${Math.round(totalSpent).toLocaleString()}</b> đã chi quảng cáo<br>
+        <b>$${Math.round(totalRevenue).toLocaleString()}</b> doanh thu<br>
+        ROAS: <b>${(totalRevenue / totalSpent * 100).toFixed(0)}%</b>`;
+      spawnConfetti();
+      setTimeout(spawnConfetti, 2000);
+    }
+
+    // === SAVE / LOAD ===
+    function saveGame() {
+      localStorage.setItem("ua_tycoon", JSON.stringify({
+        budget, users, day, totalSpent, totalRevenue, dayProgress,
+        cpiMultiplier, usersMultiplier, revenuePerUser,
+        viralChance, churnRate, organicRate,
+        activeChannels, boughtUpgrades: [...boughtUpgrades],
+      }));
+    }
+
+    function loadGame() {
+      const d = JSON.parse(localStorage.getItem("ua_tycoon") || "null");
+      if (!d) return false;
+      budget = d.budget; users = d.users; day = d.day;
+      totalSpent = d.totalSpent; totalRevenue = d.totalRevenue;
+      dayProgress = d.dayProgress || 0;
+      cpiMultiplier = d.cpiMultiplier; usersMultiplier = d.usersMultiplier;
+      revenuePerUser = d.revenuePerUser || 0.5;
+      viralChance = d.viralChance; churnRate = d.churnRate; organicRate = d.organicRate;
+      activeChannels = d.activeChannels || {};
+      boughtUpgrades = new Set(d.boughtUpgrades);
+      return true;
+    }
+
+    function startGame() {
+      document.getElementById("intro").style.display = "none";
+      document.getElementById("game").style.display = "block";
+      document.getElementById("goalBar").style.display = "block";
+      renderChannels(); renderUpgrades(); updateUI();
+      startTick();
+    }
+
+    document.getElementById("startBtn").addEventListener("click", startGame);
+    if (loadGame()) startGame();
+  </script>
+</body>
+</html>
