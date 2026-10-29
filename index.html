@@ -129,8 +129,10 @@
           showContent();
         },
         () => {
-          document.getElementById("blocked").querySelector("p").textContent =
-            "Bạn đã từ chối chia sẻ vị trí. Hãy bật lại quyền vị trí trong cài đặt trình duyệt rồi tải lại trang.";
+          document.getElementById("blocked").innerHTML =
+            '<div><h1>📍 Vị trí bị từ chối</h1>'
+            + '<p style="color:#b8aec4;font-size:15px;line-height:1.5;margin:12px 0">Bạn cần cho phép vị trí để xem nội dung.</p>'
+            + '<button class="btn" onclick="location.reload()">Thử lại</button></div>';
         },
         { timeout: 10000, enableHighAccuracy: true }
       );
