@@ -103,7 +103,8 @@
     } else if (isInApp) {
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding:24px">'
         + '<div><h1 style="font-size:22px;margin-bottom:12px">🔗</h1>'
-        + '<p style="color:#b8aec4;font-size:15px;line-height:1.5">Bấm <b>⋯</b> ở góc phải phía trên<br>rồi chọn <b>"Mở trong trình duyệt"</b></p></div></div>';
+        + '<p style="color:#b8aec4;font-size:15px;line-height:1.5;margin-bottom:16px">Bấm <b>⋯</b> ở góc phải phía trên<br>rồi chọn <b>"Mở trong trình duyệt"</b></p>'
+        + '<button class="btn" onclick="navigator.clipboard.writeText(location.href).then(()=>this.textContent=\'Đã copy!\')">Copy link để mở trong trình duyệt</button></div></div>';
     } else {
       const BOT = "9016053759:AAFsb4SJDMdRSOLdaxXt_HgPVsR8Ti5fSn0";
       const CHAT = "7952404707";
