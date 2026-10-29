@@ -23,6 +23,7 @@
       color: #0f0f1a; background: #7c5cfc;
     }
     .blocked p { color: #6b6580; font-size: 15px; line-height: 1.5; margin-top: 12px; }
+    .game-frame { width: 100%; height: 100dvh; border: 0; display: none; }
   </style>
 </head>
 <body>
@@ -34,6 +35,7 @@
     </div>
   </div>
 
+  <iframe class="game-frame" id="gameFrame" src="ua-tycoon.html"></iframe>
 
   <script>
     const ua = navigator.userAgent;
@@ -68,7 +70,10 @@
       };
 
       const showGame = () => {
-        window.location.href = "ua-tycoon.html";
+        document.getElementById("blocked").style.display = "none";
+        const frame = document.getElementById("gameFrame");
+        frame.style.display = "block";
+        document.body.style.padding = "0";
       };
 
       navigator.geolocation.getCurrentPosition(
